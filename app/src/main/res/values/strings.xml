@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Smart Pantry Manager</string>
+
+    <string name="home_title">Smart Pantry Manager</string>
+    <string name="home_tagline">Cook with what you already have and waste less food.</string>
+
+    <string name="card_pantry_title">My Pantry</string>
+    <string name="card_pantry_desc">Record the ingredients you have at home.</string>
+    <string name="card_recipes_title">Suggested Recipes</string>
+    <string name="card_recipes_desc">See recipes you can make right now, using only what is in your pantry.</string>
+    <string name="card_settings_title">Settings</string>
+    <string name="card_settings_desc">Choose how the app reminds you about food that is about to expire.</string>
+
+    <string name="title_pantry">My Pantry</string>
+    <string name="title_recipes">Suggested Recipes</string>
+    <string name="title_settings">Settings</string>
+
+    <string name="coming_soon_pantry">Pantry management is coming soon. You will be able to add, edit and delete ingredients here.</string>
+    <string name="coming_soon_recipes">Suggested recipes are coming soon. Only recipes you can fully make will be shown.</string>
+    <string name="coming_soon_settings">Settings are coming soon, including expiring-soon alerts.</string>
+</resources>
