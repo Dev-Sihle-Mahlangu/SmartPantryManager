@@ -9,7 +9,7 @@ Status values: Not started, In progress, Implemented, Tested.
 |-------|-------------|--------|
 | 1 | Project foundation, theme, home screen, README, Git | Implemented (awaiting first run in Android Studio) |
 | 2 | SQLite database and pantry CRUD | Implemented (awaiting manual testing) |
-| 3 | Recipes, seeding, strict matching | Not started |
+| 3 | Recipes, seeding, strict matching | Implemented (awaiting manual testing) |
 | 4 | Settings, navigation, UI polish | Not started |
 | 5 | Testing and code quality | Not started |
 | 6 | README and GitHub finalization | In progress |
@@ -26,12 +26,12 @@ Status values: Not started, In progress, Implemented, Tested.
 | Pantry CRUD with validation | Implemented, not yet tested |
 | Pantry list with RecyclerView and custom Adapter | Implemented, not yet tested |
 | SQLite persistence | Implemented, not yet tested |
-| 15 to 20 seeded recipes without duplication | Not started |
-| Strict recipe matching, normalization, unit conversion | Not started |
-| Suggested Recipes screen with empty state | Not started |
-| Recipe details screen | Not started |
+| 15 to 20 seeded recipes without duplication | Implemented (20 recipes), not yet tested on device |
+| Strict recipe matching, normalization, unit conversion | Implemented, unit tests written but not yet run |
+| Suggested Recipes screen with empty state | Implemented, not yet tested |
+| Recipe details screen | Implemented, not yet tested |
 | Settings screen | Placeholder only |
-| At least 10 genuine commits | 4 pushed after Phase 1, update after Phase 2 |
+| At least 10 genuine commits | Update after pushing Phase 2 and Phase 3 commits |
 | Report, screenshots, diagrams | Not started |
 | Demo video (5 to 7 minutes) | Not started |
 | Final ZIP under 50 MB | Not started |

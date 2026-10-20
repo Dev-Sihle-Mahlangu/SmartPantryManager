@@ -32,7 +32,7 @@ A recipe only appears in Suggested Recipes when every required ingredient is in 
 
 ## Current status
 
-Phase 1 (project foundation, theme, home screen, navigation) and Phase 2 (SQLite database, pantry list with RecyclerView, add, edit and delete with validation) are implemented. Suggested Recipes and Settings are still placeholders. See `docs/IMPLEMENTATION_CHECKLIST.md` for progress on every requirement.
+Phases 1 to 3 are implemented: project foundation and home screen, SQLite pantry CRUD with RecyclerView and validation, and the recipe database with strict matching, the Suggested Recipes screen and recipe details. The Settings screen is still a placeholder. See `docs/IMPLEMENTATION_CHECKLIST.md` for progress on every requirement.
 
 ## Requirements
 
@@ -52,9 +52,9 @@ Phase 1 (project foundation, theme, home screen, navigation) and Phase 2 (SQLite
 app/src/main/java/com/smartpantry/manager/
     activities/   Screens (MainActivity and the other Activities)
     adapters/     RecyclerView adapters (PantryAdapter)
-    database/     SQLiteOpenHelper and CRUD code (PantryDbHelper)
-    models/       Plain Java model classes (PantryItem)
-    utils/        Input validation and formatting (matching and unit conversion come in Phase 3)
+    database/     SQLiteOpenHelper, CRUD code and recipe seeding (PantryDbHelper, RecipeSeeder, SeedRecipes)
+    models/       Plain Java model classes (PantryItem, Recipe, RecipeIngredient)
+    utils/        Validation, ingredient normalizer, unit converter and RecipeMatcher
 app/src/main/res/
     layout/       XML layouts
     values/       Strings, colours and theme
@@ -62,4 +62,14 @@ app/src/main/res/
 
 ## Database
 
-The app uses one SQLite database (`smart_pantry.db`) managed by `PantryDbHelper`. Phase 2 creates the `pantry_item` table with an auto-incrementing primary key, name, quantity, unit and an optional expiry date. Upgrades never drop tables, so saved pantry data is kept when the schema grows.
+The app uses one SQLite database (`smart_pantry.db`) managed by `PantryDbHelper`. Version 2 of the schema has three tables: `pantry_item` (what the user has), `recipe` (name and preparation steps) and `recipe_ingredient` (the ingredients of each recipe, linked to `recipe` by a foreign key). Upgrades never drop tables, so saved pantry data is kept when the schema grows. The 20 built-in recipes are inserted once, when the recipe table is empty, so restarting the app never duplicates them.
+
+## Strict recipe matching
+
+`RecipeMatcher` decides which recipes appear in Suggested Recipes. A recipe qualifies only if EVERY ingredient passes all of these checks. One failure rejects the whole recipe, and there are no partial matches.
+
+1. **Name:** names are normalized (lower case, extra spaces removed, last word made singular), so "Tomatoes" in the pantry matches "tomato" in a recipe.
+2. **Units:** quantities are converted to a base unit (grams, millilitres or pieces), so 1000 g equals 1 kg. Mass, volume and count units are never compared with each other, so grams never equal millilitres.
+3. **Quantity:** the combined pantry amount must be at least the amount the recipe needs. Duplicate pantry entries of the same ingredient are added together.
+
+Suggestions are recalculated every time the screen is shown, so they always reflect the latest pantry. The matching logic has no Android code and is covered by JVM unit tests in `app/src/test`.
