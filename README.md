@@ -30,6 +30,9 @@ A recipe only appears in Suggested Recipes when every required ingredient is in 
 - Settings screen with an expiring-soon alert preference
 - Data that persists after the app is closed and reopened
 
+## Current status
+
+Phase 1 (project foundation, theme, home screen, navigation) and Phase 2 (SQLite database, pantry list with RecyclerView, add, edit and delete with validation) are implemented. Suggested Recipes and Settings are still placeholders. See `docs/IMPLEMENTATION_CHECKLIST.md` for progress on every requirement.
 
 ## Requirements
 
@@ -48,11 +51,15 @@ A recipe only appears in Suggested Recipes when every required ingredient is in 
 ```
 app/src/main/java/com/smartpantry/manager/
     activities/   Screens (MainActivity and the other Activities)
-    adapters/     RecyclerView adapters (Phase 2 onwards)
-    database/     SQLiteOpenHelper and data access code (Phase 2 onwards)
-    models/       Plain Java model classes (Phase 2 onwards)
-    utils/        Matching, normalization and unit conversion helpers
+    adapters/     RecyclerView adapters (PantryAdapter)
+    database/     SQLiteOpenHelper and CRUD code (PantryDbHelper)
+    models/       Plain Java model classes (PantryItem)
+    utils/        Input validation and formatting (matching and unit conversion come in Phase 3)
 app/src/main/res/
     layout/       XML layouts
     values/       Strings, colours and theme
 ```
+
+## Database
+
+The app uses one SQLite database (`smart_pantry.db`) managed by `PantryDbHelper`. Phase 2 creates the `pantry_item` table with an auto-incrementing primary key, name, quantity, unit and an optional expiry date. Upgrades never drop tables, so saved pantry data is kept when the schema grows.
