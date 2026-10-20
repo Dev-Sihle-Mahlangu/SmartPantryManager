@@ -8,4 +8,5 @@
     <color name="pantry_text">#1F2A1F</color>
     <color name="pantry_text_secondary">#5B665B</color>
     <color name="white">#FFFFFF</color>
+    <color name="pantry_red">#C62828</color>
 </resources>

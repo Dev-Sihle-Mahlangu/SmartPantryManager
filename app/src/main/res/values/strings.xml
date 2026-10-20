@@ -19,4 +19,40 @@
     <string name="coming_soon_pantry">Pantry management is coming soon. You will be able to add, edit and delete ingredients here.</string>
     <string name="coming_soon_recipes">Suggested recipes are coming soon. Only recipes you can fully make will be shown.</string>
     <string name="coming_soon_settings">Settings are coming soon, including expiring-soon alerts.</string>
+
+    <!-- Pantry screens (Phase 2) -->
+    <string name="title_add_ingredient">Add Ingredient</string>
+    <string name="title_edit_ingredient">Edit Ingredient</string>
+    <string name="hint_name">Ingredient name</string>
+    <string name="hint_quantity">Quantity</string>
+    <string name="hint_unit">Unit</string>
+    <string name="hint_expiry">Expiry date (optional)</string>
+    <string name="button_save">Save</string>
+    <string name="button_clear_date">Clear date</string>
+    <string name="button_edit">Edit</string>
+    <string name="button_delete">Delete</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="cd_add_ingredient">Add ingredient</string>
+
+    <string name="pantry_empty">Your pantry is empty. Tap the + button to add your first ingredient.</string>
+    <string name="pantry_quantity_format">%1$s %2$s</string>
+    <string name="pantry_expiry_none">No expiry date</string>
+    <string name="pantry_expires_format">Expires: %1$s</string>
+    <string name="pantry_expired_format">Expired: %1$s</string>
+
+    <string name="dialog_delete_title">Delete ingredient?</string>
+    <string name="dialog_delete_message">Remove %1$s from your pantry? This cannot be undone.</string>
+    <string name="message_item_saved">Ingredient saved.</string>
+    <string name="message_item_deleted">%1$s removed from your pantry.</string>
+
+    <string name="error_name_blank">Please enter an ingredient name.</string>
+    <string name="error_name_too_long">The name must be 50 characters or fewer.</string>
+    <string name="error_name_invalid">The name must contain letters.</string>
+    <string name="error_quantity_blank">Please enter a quantity.</string>
+    <string name="error_quantity_invalid">Enter a valid number, for example 2 or 0.5.</string>
+    <string name="error_quantity_not_positive">The quantity must be greater than zero.</string>
+    <string name="error_quantity_too_large">The quantity is too large (maximum 100000).</string>
+    <string name="error_unit_invalid">Please choose a unit from the list.</string>
+    <string name="error_database">Something went wrong with the database. Please try again.</string>
+    <string name="error_item_not_found">That ingredient could not be found.</string>
 </resources>
