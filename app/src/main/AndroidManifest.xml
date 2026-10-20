@@ -17,11 +17,17 @@
             </intent-filter>
         </activity>
 
-        <!-- Screens below are placeholders until their phases are built -->
         <activity
             android:name=".activities.PantryActivity"
             android:exported="false"
             android:parentActivityName=".activities.MainActivity" />
+        <activity
+            android:name=".activities.AddEditPantryActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.PantryActivity"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Placeholders until their phases are built -->
         <activity
             android:name=".activities.SuggestedRecipesActivity"
             android:exported="false"
