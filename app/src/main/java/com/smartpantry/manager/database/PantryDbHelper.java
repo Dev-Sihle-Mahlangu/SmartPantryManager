@@ -7,27 +7,47 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.smartpantry.manager.models.PantryItem;
+import com.smartpantry.manager.models.Recipe;
+import com.smartpantry.manager.models.RecipeIngredient;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Handles the SQLite database for Smart Pantry Manager.
- * Phase 2 only has the pantry_item table. The recipe tables will be added in
- * Phase 3 by raising DATABASE_VERSION and extending onUpgrade, so existing
- * pantry data is kept.
+ *
+ * Tables:
+ * - pantry_item: what the user has at home (Phase 2)
+ * - recipe: recipe name and preparation steps (Phase 3)
+ * - recipe_ingredient: the ingredients each recipe needs, linked to recipe by recipe_id (Phase 3)
+ *
+ * Version history:
+ * 1 = pantry_item only
+ * 2 = adds the recipe tables and seeds the recipes. Upgrading from 1 keeps all pantry data.
  */
 public class PantryDbHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "smart_pantry.db";
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
 
+    // pantry_item
     public static final String TABLE_PANTRY = "pantry_item";
     public static final String COL_ID = "_id";
     public static final String COL_NAME = "name";
     public static final String COL_QUANTITY = "quantity";
     public static final String COL_UNIT = "unit";
     public static final String COL_EXPIRY = "expiry_date";
+
+    // recipe
+    public static final String TABLE_RECIPE = "recipe";
+    public static final String COL_INSTRUCTIONS = "instructions";
+
+    // recipe_ingredient
+    public static final String TABLE_RECIPE_INGREDIENT = "recipe_ingredient";
+    public static final String COL_RECIPE_ID = "recipe_id";
+    public static final String COL_INGREDIENT_NAME = "ingredient_name";
 
     private static final String CREATE_PANTRY_TABLE =
             "CREATE TABLE " + TABLE_PANTRY + " ("
@@ -37,6 +57,23 @@ public class PantryDbHelper extends SQLiteOpenHelper {
                     + COL_UNIT + " TEXT NOT NULL, "
                     + COL_EXPIRY + " TEXT)";
 
+    private static final String CREATE_RECIPE_TABLE =
+            "CREATE TABLE " + TABLE_RECIPE + " ("
+                    + COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + COL_NAME + " TEXT NOT NULL UNIQUE, "
+                    + COL_INSTRUCTIONS + " TEXT NOT NULL)";
+
+    // Each ingredient row belongs to one recipe. Deleting a recipe removes its ingredients too.
+    private static final String CREATE_RECIPE_INGREDIENT_TABLE =
+            "CREATE TABLE " + TABLE_RECIPE_INGREDIENT + " ("
+                    + COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                    + COL_RECIPE_ID + " INTEGER NOT NULL, "
+                    + COL_INGREDIENT_NAME + " TEXT NOT NULL, "
+                    + COL_QUANTITY + " REAL NOT NULL CHECK(" + COL_QUANTITY + " > 0), "
+                    + COL_UNIT + " TEXT NOT NULL, "
+                    + "FOREIGN KEY(" + COL_RECIPE_ID + ") REFERENCES " + TABLE_RECIPE
+                    + "(" + COL_ID + ") ON DELETE CASCADE)";
+
     public PantryDbHelper(Context context) {
         // Application context avoids leaking an Activity
         super(context.getApplicationContext(), DATABASE_NAME, null, DATABASE_VERSION);
@@ -45,30 +82,38 @@ public class PantryDbHelper extends SQLiteOpenHelper {
     @Override
     public void onConfigure(SQLiteDatabase db) {
         super.onConfigure(db);
-        // Needed in Phase 3 for the recipe to ingredient foreign keys
+        // Makes SQLite enforce the recipe_ingredient to recipe foreign key
         db.setForeignKeyConstraintsEnabled(true);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(CREATE_PANTRY_TABLE);
+        createRecipeTables(db);
+        RecipeSeeder.seed(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Deliberately does NOT drop tables, so a user's pantry survives upgrades.
-        // Later versions will add CREATE TABLE / ALTER TABLE steps here.
+        // Never drops tables, so a user's pantry survives an upgrade
+        if (oldVersion < 2) {
+            createRecipeTables(db);
+            RecipeSeeder.seed(db);
+        }
     }
 
-    // ---------------------------------------------------------------- CREATE
+    private void createRecipeTables(SQLiteDatabase db) {
+        db.execSQL(CREATE_RECIPE_TABLE);
+        db.execSQL(CREATE_RECIPE_INGREDIENT_TABLE);
+    }
+
+    // =============================================================== PANTRY
 
     /** Inserts an item and returns its new row id, or -1 if the insert failed. */
     public long insertItem(PantryItem item) {
         SQLiteDatabase db = getWritableDatabase();
         return db.insert(TABLE_PANTRY, null, toContentValues(item));
     }
-
-    // ------------------------------------------------------------------ READ
 
     /** Returns every pantry item, sorted by name ignoring upper/lower case. */
     public List<PantryItem> getAllItems() {
@@ -77,7 +122,7 @@ public class PantryDbHelper extends SQLiteOpenHelper {
         try (Cursor cursor = db.query(TABLE_PANTRY, null, null, null, null, null,
                 COL_NAME + " COLLATE NOCASE ASC")) {
             while (cursor.moveToNext()) {
-                items.add(fromCursor(cursor));
+                items.add(pantryItemFromCursor(cursor));
             }
         }
         return items;
@@ -89,13 +134,11 @@ public class PantryDbHelper extends SQLiteOpenHelper {
         try (Cursor cursor = db.query(TABLE_PANTRY, null, COL_ID + " = ?",
                 new String[]{String.valueOf(id)}, null, null, null, "1")) {
             if (cursor.moveToFirst()) {
-                return fromCursor(cursor);
+                return pantryItemFromCursor(cursor);
             }
         }
         return null;
     }
-
-    // ---------------------------------------------------------------- UPDATE
 
     /** Returns the number of rows changed (1 on success, 0 if the id was not found). */
     public int updateItem(PantryItem item) {
@@ -104,15 +147,11 @@ public class PantryDbHelper extends SQLiteOpenHelper {
                 new String[]{String.valueOf(item.getId())});
     }
 
-    // ---------------------------------------------------------------- DELETE
-
     /** Returns the number of rows deleted. */
     public int deleteItem(long id) {
         SQLiteDatabase db = getWritableDatabase();
         return db.delete(TABLE_PANTRY, COL_ID + " = ?", new String[]{String.valueOf(id)});
     }
-
-    // --------------------------------------------------------------- helpers
 
     private ContentValues toContentValues(PantryItem item) {
         ContentValues values = new ContentValues();
@@ -127,7 +166,7 @@ public class PantryDbHelper extends SQLiteOpenHelper {
         return values;
     }
 
-    private PantryItem fromCursor(Cursor cursor) {
+    private PantryItem pantryItemFromCursor(Cursor cursor) {
         long id = cursor.getLong(cursor.getColumnIndexOrThrow(COL_ID));
         String name = cursor.getString(cursor.getColumnIndexOrThrow(COL_NAME));
         double quantity = cursor.getDouble(cursor.getColumnIndexOrThrow(COL_QUANTITY));
@@ -135,5 +174,78 @@ public class PantryDbHelper extends SQLiteOpenHelper {
         int expiryIndex = cursor.getColumnIndexOrThrow(COL_EXPIRY);
         String expiry = cursor.isNull(expiryIndex) ? null : cursor.getString(expiryIndex);
         return new PantryItem(id, name, quantity, unit, expiry);
+    }
+
+    // =============================================================== RECIPES
+
+    /** Returns every recipe with its ingredients, sorted by name. */
+    public List<Recipe> getAllRecipes() {
+        SQLiteDatabase db = getReadableDatabase();
+
+        // Read all ingredient rows once and group them by recipe id
+        Map<Long, List<RecipeIngredient>> ingredientsByRecipe = new HashMap<>();
+        try (Cursor cursor = db.query(TABLE_RECIPE_INGREDIENT, null, null, null, null, null,
+                COL_RECIPE_ID + ", " + COL_ID)) {
+            while (cursor.moveToNext()) {
+                RecipeIngredient ingredient = ingredientFromCursor(cursor);
+                List<RecipeIngredient> group = ingredientsByRecipe.get(ingredient.getRecipeId());
+                if (group == null) {
+                    group = new ArrayList<>();
+                    ingredientsByRecipe.put(ingredient.getRecipeId(), group);
+                }
+                group.add(ingredient);
+            }
+        }
+
+        List<Recipe> recipes = new ArrayList<>();
+        try (Cursor cursor = db.query(TABLE_RECIPE, null, null, null, null, null,
+                COL_NAME + " COLLATE NOCASE ASC")) {
+            while (cursor.moveToNext()) {
+                long id = cursor.getLong(cursor.getColumnIndexOrThrow(COL_ID));
+                List<RecipeIngredient> ingredients = ingredientsByRecipe.get(id);
+                if (ingredients == null) {
+                    ingredients = new ArrayList<>();
+                }
+                recipes.add(new Recipe(id,
+                        cursor.getString(cursor.getColumnIndexOrThrow(COL_NAME)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COL_INSTRUCTIONS)),
+                        ingredients));
+            }
+        }
+        return recipes;
+    }
+
+    /** Returns one recipe with its ingredients, or null when no recipe has that id. */
+    public Recipe getRecipeById(long id) {
+        SQLiteDatabase db = getReadableDatabase();
+        String idArg = String.valueOf(id);
+
+        List<RecipeIngredient> ingredients = new ArrayList<>();
+        try (Cursor cursor = db.query(TABLE_RECIPE_INGREDIENT, null, COL_RECIPE_ID + " = ?",
+                new String[]{idArg}, null, null, COL_ID)) {
+            while (cursor.moveToNext()) {
+                ingredients.add(ingredientFromCursor(cursor));
+            }
+        }
+
+        try (Cursor cursor = db.query(TABLE_RECIPE, null, COL_ID + " = ?",
+                new String[]{idArg}, null, null, null, "1")) {
+            if (cursor.moveToFirst()) {
+                return new Recipe(id,
+                        cursor.getString(cursor.getColumnIndexOrThrow(COL_NAME)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(COL_INSTRUCTIONS)),
+                        ingredients);
+            }
+        }
+        return null;
+    }
+
+    private RecipeIngredient ingredientFromCursor(Cursor cursor) {
+        return new RecipeIngredient(
+                cursor.getLong(cursor.getColumnIndexOrThrow(COL_ID)),
+                cursor.getLong(cursor.getColumnIndexOrThrow(COL_RECIPE_ID)),
+                cursor.getString(cursor.getColumnIndexOrThrow(COL_INGREDIENT_NAME)),
+                cursor.getDouble(cursor.getColumnIndexOrThrow(COL_QUANTITY)),
+                cursor.getString(cursor.getColumnIndexOrThrow(COL_UNIT)));
     }
 }
