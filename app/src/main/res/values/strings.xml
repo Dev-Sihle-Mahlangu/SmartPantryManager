@@ -55,4 +55,22 @@
     <string name="error_unit_invalid">Please choose a unit from the list.</string>
     <string name="error_database">Something went wrong with the database. Please try again.</string>
     <string name="error_item_not_found">That ingredient could not be found.</string>
+
+    <!-- Recipes (Phase 3) -->
+    <string name="recipe_ingredients_heading">Ingredients</string>
+    <string name="recipe_preparation_heading">Preparation</string>
+    <string name="recipe_ingredient_line">• %1$s %2$s %3$s</string>
+    <string name="button_go_to_pantry">Go to My Pantry</string>
+    <string name="suggestions_empty_pantry">Your pantry is empty, so no recipes can be suggested yet. Add some ingredients to get started.</string>
+    <string name="suggestions_empty_no_match">No recipe can be made with your current pantry yet. A recipe only appears when you have every ingredient in a large enough quantity.</string>
+    <string name="error_recipe_not_found">That recipe could not be found.</string>
+
+    <plurals name="recipe_ingredient_count">
+        <item quantity="one">%d ingredient</item>
+        <item quantity="other">%d ingredients</item>
+    </plurals>
+    <plurals name="suggestions_summary">
+        <item quantity="one">You can make %d recipe right now</item>
+        <item quantity="other">You can make %d recipes right now</item>
+    </plurals>
 </resources>

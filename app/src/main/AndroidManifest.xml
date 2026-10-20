@@ -27,11 +27,16 @@
             android:parentActivityName=".activities.PantryActivity"
             android:windowSoftInputMode="adjustResize" />
 
-        <!-- Placeholders until their phases are built -->
         <activity
             android:name=".activities.SuggestedRecipesActivity"
             android:exported="false"
             android:parentActivityName=".activities.MainActivity" />
+        <activity
+            android:name=".activities.RecipeDetailActivity"
+            android:exported="false"
+            android:parentActivityName=".activities.SuggestedRecipesActivity" />
+
+        <!-- Placeholder until Phase 4 -->
         <activity
             android:name=".activities.SettingsActivity"
             android:exported="false"
