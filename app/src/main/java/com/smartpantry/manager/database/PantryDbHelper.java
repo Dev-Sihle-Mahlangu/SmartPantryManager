@@ -75,8 +75,13 @@ public class PantryDbHelper extends SQLiteOpenHelper {
                     + "(" + COL_ID + ") ON DELETE CASCADE)";
 
     public PantryDbHelper(Context context) {
+        this(context, DATABASE_NAME);
+    }
+
+    /** Lets tests use a separate database file so they never touch the real pantry data. */
+    public PantryDbHelper(Context context, String databaseName) {
         // Application context avoids leaking an Activity
-        super(context.getApplicationContext(), DATABASE_NAME, null, DATABASE_VERSION);
+        super(context.getApplicationContext(), databaseName, null, DATABASE_VERSION);
     }
 
     @Override
