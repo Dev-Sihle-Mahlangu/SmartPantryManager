@@ -153,6 +153,25 @@ public class PantryDbHelper extends SQLiteOpenHelper {
         return db.delete(TABLE_PANTRY, COL_ID + " = ?", new String[]{String.valueOf(id)});
     }
 
+    /**
+     * Deletes several pantry items in one transaction, so either all of them are
+     * removed or (if something fails) none are. Returns the number of rows deleted.
+     */
+    public int deleteItems(List<Long> ids) {
+        SQLiteDatabase db = getWritableDatabase();
+        int total = 0;
+        db.beginTransaction();
+        try {
+            for (long id : ids) {
+                total += db.delete(TABLE_PANTRY, COL_ID + " = ?", new String[]{String.valueOf(id)});
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+        return total;
+    }
+
     private ContentValues toContentValues(PantryItem item) {
         ContentValues values = new ContentValues();
         values.put(COL_NAME, item.getName());
