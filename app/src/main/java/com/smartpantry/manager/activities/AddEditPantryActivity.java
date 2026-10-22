@@ -5,14 +5,9 @@ import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -30,7 +25,7 @@ import java.util.Locale;
  * One screen used for both adding and editing an ingredient.
  * If an item id is passed in the Intent we are editing, otherwise we are adding.
  */
-public class AddEditPantryActivity extends AppCompatActivity {
+public class AddEditPantryActivity extends BaseNavigationActivity {
 
     public static final String EXTRA_ITEM_ID = "com.smartpantry.manager.EXTRA_ITEM_ID";
 
@@ -45,16 +40,17 @@ public class AddEditPantryActivity extends AppCompatActivity {
     private PantryDbHelper dbHelper;
     private PantryItem existingItem; // null when adding a new item
 
+    /** A form should not offer a way to wander off and lose what has been typed. */
+    @Override
+    protected boolean showNavigationMenu() {
+        return false;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_pantry);
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        setUpToolbar("");
 
         layoutName = findViewById(R.id.layoutName);
         layoutQuantity = findViewById(R.id.layoutQuantity);
@@ -78,7 +74,11 @@ public class AddEditPantryActivity extends AppCompatActivity {
 
         long itemId = getIntent().getLongExtra(EXTRA_ITEM_ID, PantryItem.NO_ID);
         if (itemId != PantryItem.NO_ID) {
-            existingItem = dbHelper.getItemById(itemId);
+            try {
+                existingItem = dbHelper.getItemById(itemId);
+            } catch (SQLiteException e) {
+                existingItem = null; // handled together with "not found" below
+            }
             if (existingItem == null) {
                 // The row may have been deleted already, so there is nothing to edit
                 Toast.makeText(this, R.string.error_item_not_found, Toast.LENGTH_LONG).show();
@@ -202,15 +202,6 @@ public class AddEditPantryActivity extends AppCompatActivity {
 
     private String textOf(TextInputEditText field) {
         return field.getText() == null ? "" : field.getText().toString();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

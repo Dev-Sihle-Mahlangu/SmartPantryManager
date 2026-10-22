@@ -27,6 +27,11 @@ public abstract class BaseNavigationActivity extends AppCompatActivity {
         return 0;
     }
 
+    /** Screens such as the add/edit form can switch the navigation menu off. */
+    protected boolean showNavigationMenu() {
+        return true;
+    }
+
     protected void setUpToolbar(@StringRes int titleRes) {
         setUpToolbar(getString(titleRes));
     }
@@ -42,6 +47,9 @@ public abstract class BaseNavigationActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        if (!showNavigationMenu()) {
+            return false;
+        }
         getMenuInflater().inflate(R.menu.menu_navigation, menu);
         return true;
     }
