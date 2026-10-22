@@ -1,7 +1,10 @@
 package com.smartpantry.manager.activities;
 
 import android.app.DatePickerDialog;
+import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -65,6 +68,10 @@ public class AddEditPantryActivity extends AppCompatActivity {
 
         dbHelper = new PantryDbHelper(this);
 
+        // An error message disappears as soon as the user starts fixing that field
+        clearErrorOnEdit(editName, layoutName);
+        clearErrorOnEdit(editQuantity, layoutQuantity);
+
         dropdownUnit.setAdapter(new ArrayAdapter<>(this,
                 android.R.layout.simple_dropdown_item_1line, PantryValidator.UNITS));
         dropdownUnit.setOnItemClickListener((parent, view, position, id) -> layoutUnit.setError(null));
@@ -87,6 +94,23 @@ public class AddEditPantryActivity extends AppCompatActivity {
         editExpiry.setOnClickListener(v -> showDatePicker());
         buttonClearDate.setOnClickListener(v -> editExpiry.setText(""));
         buttonSave.setOnClickListener(v -> savePantryItem());
+    }
+
+    private void clearErrorOnEdit(TextInputEditText field, TextInputLayout layout) {
+        field.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                layout.setError(null);
+            }
+        });
     }
 
     private void fillFormFromItem(PantryItem item) {
@@ -132,11 +156,15 @@ public class AddEditPantryActivity extends AppCompatActivity {
         }
 
         boolean saved;
-        if (existingItem == null) {
-            saved = dbHelper.insertItem(new PantryItem(name, quantity, unit, expiry)) != -1;
-        } else {
-            saved = dbHelper.updateItem(
-                    new PantryItem(existingItem.getId(), name, quantity, unit, expiry)) > 0;
+        try {
+            if (existingItem == null) {
+                saved = dbHelper.insertItem(new PantryItem(name, quantity, unit, expiry)) != -1;
+            } else {
+                saved = dbHelper.updateItem(
+                        new PantryItem(existingItem.getId(), name, quantity, unit, expiry)) > 0;
+            }
+        } catch (SQLiteException e) {
+            saved = false; // shown to the user below
         }
 
         if (saved) {

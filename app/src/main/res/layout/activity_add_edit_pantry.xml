@@ -10,7 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/pantry_green"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+        android:theme="@style/ThemeOverlay.SmartPantry.Toolbar"
+        app:popupTheme="@style/ThemeOverlay.SmartPantry.Popup" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -35,6 +36,7 @@
                     android:id="@+id/editName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
                     android:inputType="textCapWords"
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -51,6 +53,7 @@
                     android:id="@+id/editQuantity"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:imeOptions="actionDone"
                     android:inputType="numberDecimal"
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
