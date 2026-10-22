@@ -36,7 +36,6 @@
             android:exported="false"
             android:parentActivityName=".activities.SuggestedRecipesActivity" />
 
-        <!-- Placeholder until Phase 4 -->
         <activity
             android:name=".activities.SettingsActivity"
             android:exported="false"
