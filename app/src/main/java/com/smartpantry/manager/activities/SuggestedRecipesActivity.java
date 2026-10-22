@@ -1,14 +1,12 @@
 package com.smartpantry.manager.activities;
 
 import android.content.Intent;
+import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,15 +16,19 @@ import com.smartpantry.manager.adapters.RecipeAdapter;
 import com.smartpantry.manager.database.PantryDbHelper;
 import com.smartpantry.manager.models.PantryItem;
 import com.smartpantry.manager.models.Recipe;
+import com.smartpantry.manager.utils.AppSettings;
+import com.smartpantry.manager.utils.ExpiryUtils;
 import com.smartpantry.manager.utils.RecipeMatcher;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /** Shows only the recipes that can be made completely from the current pantry. */
-public class SuggestedRecipesActivity extends AppCompatActivity
+public class SuggestedRecipesActivity extends BaseNavigationActivity
         implements RecipeAdapter.OnRecipeClickListener {
 
     private PantryDbHelper dbHelper;
+    private AppSettings settings;
     private RecipeAdapter adapter;
     private RecyclerView recyclerRecipes;
     private TextView textSummary;
@@ -34,18 +36,18 @@ public class SuggestedRecipesActivity extends AppCompatActivity
     private TextView textEmptyMessage;
 
     @Override
+    protected int getCurrentNavItemId() {
+        return R.id.action_recipes;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_suggested_recipes);
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(R.string.title_recipes);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        setUpToolbar(R.string.title_recipes);
 
         dbHelper = new PantryDbHelper(this);
+        settings = new AppSettings(this);
 
         recyclerRecipes = findViewById(R.id.recyclerRecipes);
         textSummary = findViewById(R.id.textSummary);
@@ -65,21 +67,35 @@ public class SuggestedRecipesActivity extends AppCompatActivity
     protected void onResume() {
         super.onResume();
         // Recalculated every time the screen is shown, so suggestions always
-        // reflect the latest pantry changes
+        // reflect the latest pantry and settings
         loadSuggestions();
     }
 
     private void loadSuggestions() {
-        List<PantryItem> pantry = dbHelper.getAllItems();
-        List<Recipe> allRecipes = dbHelper.getAllRecipes();
-        List<Recipe> makeable = RecipeMatcher.findMakeableRecipes(allRecipes, pantry);
+        List<PantryItem> allItems;
+        List<Recipe> allRecipes;
+        try {
+            allItems = dbHelper.getAllItems();
+            allRecipes = dbHelper.getAllRecipes();
+        } catch (SQLiteException e) {
+            Toast.makeText(this, R.string.error_database, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // The user can choose not to use expired food when suggesting recipes
+        List<PantryItem> usableItems = allItems;
+        if (settings.isIgnoreExpiredInSuggestions()) {
+            usableItems = ExpiryUtils.withoutExpired(allItems, LocalDate.now());
+        }
+
+        List<Recipe> makeable = RecipeMatcher.findMakeableRecipes(allRecipes, usableItems);
         adapter.setRecipes(makeable);
 
         if (makeable.isEmpty()) {
             recyclerRecipes.setVisibility(View.GONE);
             textSummary.setVisibility(View.GONE);
             layoutEmpty.setVisibility(View.VISIBLE);
-            textEmptyMessage.setText(pantry.isEmpty()
+            textEmptyMessage.setText(allItems.isEmpty()
                     ? R.string.suggestions_empty_pantry
                     : R.string.suggestions_empty_no_match);
         } else {
@@ -97,15 +113,6 @@ public class SuggestedRecipesActivity extends AppCompatActivity
         Intent intent = new Intent(this, RecipeDetailActivity.class);
         intent.putExtra(RecipeDetailActivity.EXTRA_RECIPE_ID, recipe.getId());
         startActivity(intent);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

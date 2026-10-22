@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -9,7 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/pantry_green"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+        android:theme="@style/ThemeOverlay.SmartPantry.Toolbar"
+        app:popupTheme="@style/ThemeOverlay.SmartPantry.Popup" />
 
     <TextView
         android:id="@+id/textSummary"
@@ -33,29 +35,36 @@
             android:clipToPadding="false"
             android:padding="16dp" />
 
-        <LinearLayout
+        <!-- Scrollable so the message and button are never cut off on small or landscape screens -->
+        <ScrollView
             android:id="@+id/layoutEmpty"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="32dp"
+            android:fillViewport="true"
             android:visibility="gone">
 
-            <TextView
-                android:id="@+id/textEmptyMessage"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:textAppearance="?attr/textAppearanceBodyLarge"
-                android:textColor="@color/pantry_text_secondary" />
+                android:orientation="vertical"
+                android:padding="32dp">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/buttonGoToPantry"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="@string/button_go_to_pantry" />
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/textEmptyMessage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
+                    android:textColor="@color/pantry_text_secondary" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/buttonGoToPantry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/button_go_to_pantry" />
+            </LinearLayout>
+        </ScrollView>
     </FrameLayout>
 </LinearLayout>

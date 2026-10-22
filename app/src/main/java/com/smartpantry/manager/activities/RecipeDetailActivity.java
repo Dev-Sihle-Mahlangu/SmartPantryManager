@@ -1,13 +1,9 @@
 package com.smartpantry.manager.activities;
 
+import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import com.smartpantry.manager.R;
 import com.smartpantry.manager.database.PantryDbHelper;
@@ -16,7 +12,7 @@ import com.smartpantry.manager.models.RecipeIngredient;
 import com.smartpantry.manager.utils.FormatUtils;
 
 /** Shows one recipe: its ingredients with quantities and the preparation steps. */
-public class RecipeDetailActivity extends AppCompatActivity {
+public class RecipeDetailActivity extends BaseNavigationActivity {
 
     public static final String EXTRA_RECIPE_ID = "com.smartpantry.manager.EXTRA_RECIPE_ID";
 
@@ -24,17 +20,18 @@ public class RecipeDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_detail);
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        setUpToolbar("");
 
         long recipeId = getIntent().getLongExtra(EXTRA_RECIPE_ID, Recipe.NO_ID);
+        Recipe recipe = null;
         PantryDbHelper dbHelper = new PantryDbHelper(this);
-        Recipe recipe = dbHelper.getRecipeById(recipeId);
-        dbHelper.close();
+        try {
+            recipe = dbHelper.getRecipeById(recipeId);
+        } catch (SQLiteException e) {
+            // recipe stays null and is handled below
+        } finally {
+            dbHelper.close();
+        }
 
         if (recipe == null) {
             Toast.makeText(this, R.string.error_recipe_not_found, Toast.LENGTH_LONG).show();
@@ -59,14 +56,5 @@ public class RecipeDetailActivity extends AppCompatActivity {
         TextView textInstructions = findViewById(R.id.textInstructions);
         textIngredients.setText(ingredientLines.toString());
         textInstructions.setText(recipe.getInstructions());
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 }
