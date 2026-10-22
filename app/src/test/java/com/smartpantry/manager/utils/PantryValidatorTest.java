@@ -53,6 +53,12 @@ public class PantryValidatorTest {
     }
 
     @Test
+    public void tinyQuantity_isRejectedButSmallestAllowedValueIsAccepted() {
+        assertEquals(R.string.error_quantity_too_small, PantryValidator.validateQuantity("0.0001"));
+        assertEquals(PantryValidator.VALID, PantryValidator.validateQuantity("0.001"));
+    }
+
+    @Test
     public void hugeQuantity_isRejected() {
         assertEquals(R.string.error_quantity_too_large, PantryValidator.validateQuantity("1000000"));
     }

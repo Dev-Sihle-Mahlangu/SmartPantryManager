@@ -47,6 +47,7 @@
     <string name="error_quantity_blank">Please enter a quantity.</string>
     <string name="error_quantity_invalid">Enter a valid number, for example 2 or 0.5.</string>
     <string name="error_quantity_not_positive">The quantity must be greater than zero.</string>
+    <string name="error_quantity_too_small">The quantity is too small (minimum 0.001).</string>
     <string name="error_quantity_too_large">The quantity is too large (maximum 100000).</string>
     <string name="error_unit_invalid">Please choose a unit from the list.</string>
     <string name="error_database">Something went wrong with the database. Please try again.</string>

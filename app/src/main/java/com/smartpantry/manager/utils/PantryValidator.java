@@ -16,6 +16,8 @@ public final class PantryValidator {
     public static final int VALID = 0;
     public static final int MAX_NAME_LENGTH = 50;
     public static final double MAX_QUANTITY = 100000;
+    /** Below this the quantity would be shown as 0, so it is rejected instead. */
+    public static final double MIN_QUANTITY = 0.001;
 
     /** The units the user can pick from. Phase 3 will use the same list for conversions. */
     public static final List<String> UNITS =
@@ -82,6 +84,9 @@ public final class PantryValidator {
         }
         if (quantity <= 0) {
             return R.string.error_quantity_not_positive;
+        }
+        if (quantity < MIN_QUANTITY) {
+            return R.string.error_quantity_too_small;
         }
         if (quantity > MAX_QUANTITY) {
             return R.string.error_quantity_too_large;
