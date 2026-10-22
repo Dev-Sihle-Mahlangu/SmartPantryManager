@@ -24,15 +24,16 @@ A recipe only appears in Suggested Recipes when every required ingredient is in 
 ## Planned features
 
 - Add, view, edit and delete pantry ingredients (name, quantity, unit, optional expiry date)
+- Select several ingredients (press and hold) and delete them in one go
 - At least 15 seeded recipes stored in SQLite
 - Strict matching with name normalization and unit conversion
 - Suggested Recipes and Recipe Details screens
-- Settings screen with an expiring-soon alert preference
+- Settings screen with an expiring-soon alert preference, saved with SharedPreferences
 - Data that persists after the app is closed and reopened
 
 ## Current status
 
-Phases 1 to 3 are implemented: project foundation and home screen, SQLite pantry CRUD with RecyclerView and validation, and the recipe database with strict matching, the Suggested Recipes screen and recipe details. The Settings screen is still a placeholder. See `docs/IMPLEMENTATION_CHECKLIST.md` for progress on every requirement.
+Phases 1 to 4 are implemented: project foundation and home screen, SQLite pantry CRUD with RecyclerView and validation, the recipe database with strict matching, Suggested Recipes and recipe details, and a Settings screen with a toolbar navigation menu and expiring-soon highlighting. Testing and polish (Phase 5) is next. See `docs/IMPLEMENTATION_CHECKLIST.md` for progress on every requirement.
 
 ## Requirements
 
@@ -54,7 +55,7 @@ app/src/main/java/com/smartpantry/manager/
     adapters/     RecyclerView adapters (PantryAdapter)
     database/     SQLiteOpenHelper, CRUD code and recipe seeding (PantryDbHelper, RecipeSeeder, SeedRecipes)
     models/       Plain Java model classes (PantryItem, Recipe, RecipeIngredient)
-    utils/        Validation, ingredient normalizer, unit converter and RecipeMatcher
+    utils/        Validation, ingredient normalizer, unit converter, RecipeMatcher, ExpiryUtils and AppSettings
 app/src/main/res/
     layout/       XML layouts
     values/       Strings, colours and theme
@@ -73,3 +74,13 @@ The app uses one SQLite database (`smart_pantry.db`) managed by `PantryDbHelper`
 3. **Quantity:** the combined pantry amount must be at least the amount the recipe needs. Duplicate pantry entries of the same ingredient are added together.
 
 Suggestions are recalculated every time the screen is shown, so they always reflect the latest pantry. The matching logic has no Android code and is covered by JVM unit tests in `app/src/test`.
+
+## Settings and navigation
+
+The Settings screen stores three preferences with SharedPreferences, so they survive restarting the app:
+
+- Expiring soon alerts on or off
+- How many days ahead counts as "expiring soon" (1, 2, 3, 5 or 7)
+- Whether expired items are ignored when suggesting recipes (off by default)
+
+Every main screen has a toolbar menu with Home, My Pantry, Suggested Recipes and Settings. The menu hides the entry for the screen you are already on. Screens are opened with explicit Intents.
