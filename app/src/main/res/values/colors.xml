@@ -9,4 +9,7 @@
     <color name="pantry_text_secondary">#5B665B</color>
     <color name="white">#FFFFFF</color>
     <color name="pantry_red">#C62828</color>
+    <color name="pantry_warning">#BF360C</color>
+    <color name="pantry_banner_background">#FFF3E0</color>
+    <color name="toolbar_icon">#FFFFFF</color>
 </resources>

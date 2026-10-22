@@ -16,10 +16,6 @@
     <string name="title_recipes">Suggested Recipes</string>
     <string name="title_settings">Settings</string>
 
-    <string name="coming_soon_pantry">Pantry management is coming soon. You will be able to add, edit and delete ingredients here.</string>
-    <string name="coming_soon_recipes">Suggested recipes are coming soon. Only recipes you can fully make will be shown.</string>
-    <string name="coming_soon_settings">Settings are coming soon, including expiring-soon alerts.</string>
-
     <!-- Pantry screens (Phase 2) -->
     <string name="title_add_ingredient">Add Ingredient</string>
     <string name="title_edit_ingredient">Edit Ingredient</string>
@@ -72,5 +68,46 @@
     <plurals name="suggestions_summary">
         <item quantity="one">You can make %d recipe right now</item>
         <item quantity="other">You can make %d recipes right now</item>
+    </plurals>
+
+    <!-- Navigation, settings and expiry (Phase 4) -->
+    <string name="menu_home">Home</string>
+    <string name="setting_alerts_title">Expiring soon alerts</string>
+    <string name="setting_alerts_desc">Highlight pantry items that are close to their expiry date.</string>
+    <string name="setting_days_label">Warn me when an item expires within</string>
+    <string name="setting_ignore_title">Ignore expired items in suggestions</string>
+    <string name="setting_ignore_desc">When on, pantry items past their expiry date are not used to suggest recipes.</string>
+    <string name="pantry_expires_today">Expires today (%1$s)</string>
+
+    <plurals name="setting_days_option">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <plurals name="pantry_expiring_soon">
+        <item quantity="one">Expires tomorrow (%2$s)</item>
+        <item quantity="other">Expires in %1$d days (%2$s)</item>
+    </plurals>
+    <plurals name="pantry_attention_banner">
+        <item quantity="one">%d item is expired or expiring soon</item>
+        <item quantity="other">%d items are expired or expiring soon</item>
+    </plurals>
+
+    <!-- Multi-select delete -->
+    <string name="button_select_all">Select all</string>
+    <string name="cd_select_item">Select ingredient</string>
+    <string name="pantry_selection_hint">Tip: press and hold an ingredient to select several and delete them together.</string>
+    <string name="dialog_delete_selected_title">Delete selected ingredients?</string>
+
+    <plurals name="selection_count">
+        <item quantity="one">%d selected</item>
+        <item quantity="other">%d selected</item>
+    </plurals>
+    <plurals name="dialog_delete_selected_message">
+        <item quantity="one">Remove %d ingredient from your pantry? This cannot be undone.</item>
+        <item quantity="other">Remove %d ingredients from your pantry? This cannot be undone.</item>
+    </plurals>
+    <plurals name="message_items_deleted">
+        <item quantity="one">%d ingredient removed from your pantry.</item>
+        <item quantity="other">%d ingredients removed from your pantry.</item>
     </plurals>
 </resources>

@@ -11,4 +11,18 @@
         <item name="android:textColorPrimary">@color/pantry_text</item>
         <item name="android:textColorSecondary">@color/pantry_text_secondary</item>
     </style>
+
+    <!-- Toolbar icons (Up arrow, three dots) are white on the green bar -->
+    <style name="ThemeOverlay.SmartPantry.Toolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="colorControlNormal">@color/toolbar_icon</item>
+    </style>
+
+    <!-- The dropdown menu opens on a light background, so its text must be dark.
+         Without this the menu inherits the toolbar's white text and becomes unreadable. -->
+    <style name="ThemeOverlay.SmartPantry.Popup" parent="ThemeOverlay.AppCompat.Light">
+        <item name="android:textColorPrimary">@color/pantry_text</item>
+        <item name="android:textColorSecondary">@color/pantry_text_secondary</item>
+        <item name="android:colorBackground">@color/white</item>
+        <item name="android:colorBackgroundFloating">@color/white</item>
+    </style>
 </resources>
