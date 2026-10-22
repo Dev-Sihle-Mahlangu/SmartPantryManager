@@ -3,6 +3,10 @@
 build/
 /captures
 
+# Built apps
+*.apk
+*.aab
+
 # Local machine configuration
 local.properties
 
@@ -10,10 +14,14 @@ local.properties
 .idea/
 *.iml
 .DS_Store
+Thumbs.db
 
 # Native build and external files
 .externalNativeBuild/
 .cxx/
+
+# Logs
+*.log
 
 # Keystores (never commit signing keys)
 *.jks
