@@ -12,7 +12,7 @@ Status values: Not started, In progress, Implemented, Tested.
 | 3 | Recipes, seeding, strict matching | Implemented (awaiting manual testing) |
 | 4 | Settings, navigation, UI polish | Implemented (awaiting manual testing) |
 | 5 | Testing and code quality | In progress (code reviewed, automated tests added, device testing pending) |
-| 6 | README and GitHub finalization | In progress |
+| 6 | README and GitHub finalization | Implemented (README, .gitignore, .gitattributes, Git guides); public repository check pending |
 | 7 | Written report | Not started |
 | 8 | Video and final ZIP | Not started |
 
