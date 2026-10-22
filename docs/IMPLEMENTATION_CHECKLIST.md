@@ -11,7 +11,7 @@ Status values: Not started, In progress, Implemented, Tested.
 | 2 | SQLite database and pantry CRUD | Implemented (awaiting manual testing) |
 | 3 | Recipes, seeding, strict matching | Implemented (awaiting manual testing) |
 | 4 | Settings, navigation, UI polish | Implemented (awaiting manual testing) |
-| 5 | Testing and code quality | Not started |
+| 5 | Testing and code quality | In progress (code reviewed, automated tests added, device testing pending) |
 | 6 | README and GitHub finalization | In progress |
 | 7 | Written report | Not started |
 | 8 | Video and final ZIP | Not started |

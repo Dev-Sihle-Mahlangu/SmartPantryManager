@@ -33,7 +33,7 @@ A recipe only appears in Suggested Recipes when every required ingredient is in 
 
 ## Current status
 
-Phases 1 to 4 are implemented: project foundation and home screen, SQLite pantry CRUD with RecyclerView and validation, the recipe database with strict matching, Suggested Recipes and recipe details, and a Settings screen with a toolbar navigation menu and expiring-soon highlighting. Testing and polish (Phase 5) is next. See `docs/IMPLEMENTATION_CHECKLIST.md` for progress on every requirement.
+Phases 1 to 4 are implemented: project foundation and home screen, SQLite pantry CRUD with RecyclerView and validation, the recipe database with strict matching, Suggested Recipes and recipe details, and a Settings screen with a toolbar navigation menu and expiring-soon highlighting. Phase 5 (testing and code review) is in progress. See `docs/IMPLEMENTATION_CHECKLIST.md` for progress on every requirement.
 
 ## Requirements
 
@@ -84,3 +84,15 @@ The Settings screen stores three preferences with SharedPreferences, so they sur
 - Whether expired items are ignored when suggesting recipes (off by default)
 
 Every main screen has a toolbar menu with Home, My Pantry, Suggested Recipes and Settings. The menu hides the entry for the screen you are already on. Screens are opened with explicit Intents.
+
+## Testing
+
+- **JVM unit tests** (`app/src/test`): validation, ingredient normalizer, unit converter, strict recipe matcher, expiry rules and seed data. These run without a device.
+- **Instrumented tests** (`app/src/androidTest`): the real SQLite database on an emulator, covering CRUD, first-run seeding without duplicates, upgrading a version 1 database without losing pantry data, and end-to-end suggestions. They use a separate test database file, so your pantry data is not touched.
+- **Manual test log:** `docs/TEST_LOG.md` lists every manual test with a Result column to fill in.
+
+## Known limitations
+
+- Database calls run on the main thread. This is acceptable for the small amount of data here, but a larger app would move them to a background thread.
+- Recipes are built in and cannot be added or edited inside the app.
+- Settings changes apply the next time a screen is shown, not live on screens that are already open.
