@@ -15,7 +15,7 @@ A recipe appears in Suggested Recipes only when **every** required ingredient is
 | Feature | Details |
 |---------|---------|
 | Pantry management | Add, view, edit and delete ingredients with a name, quantity, unit and optional expiry date |
-| Input validation | Blank names, names without letters, zero, negative, tiny, huge or non-numeric quantities and missing units are rejected with a message on the field |
+| Input validation | Blank names, names without letters, zero, negative, huge or non-numeric quantities and missing units are rejected with a message on the field |
 | Multi-select delete | Press and hold an ingredient to select several, then delete them together |
 | Recipe collection | 20 built-in recipes stored in SQLite and seeded once |
 | Strict matching | Name normalization, unit conversion and quantity checks (see below) |
@@ -24,7 +24,7 @@ A recipe appears in Suggested Recipes only when **every** required ingredient is
 | Expiry alerts | Items that are expired or expiring soon are highlighted, with a summary banner |
 | Settings | Alerts on or off, how many days counts as "soon", and whether expired items are ignored in suggestions. Saved with SharedPreferences |
 | Navigation | Home cards plus a toolbar menu on every main screen, using explicit Intents |
-| Persistence | All pantry data survives closing and reopening the app |
+| Persistence | Pantry data is stored in SQLite, so it is kept when the app is closed and reopened |
 
 ## Technology
 
@@ -56,11 +56,10 @@ A recipe appears in Suggested Recipes only when **every** required ingredient is
 4. If Android Studio reports an incompatible Gradle JVM, open **Settings > Build, Execution, Deployment > Build Tools > Gradle** and set **Gradle JDK** to a JDK 17 or 21.
 5. Choose an emulator or connected device and press **Run**.
 
-## How to run the tests
+## Testing
 
-- **JVM unit tests:** right-click `app/src/test` and choose **Run Tests**. No device is needed.
-- **Instrumented database tests:** start an emulator, then right-click `app/src/androidTest` and choose **Run Tests**. These use a separate test database file and do not touch real pantry data.
-- **Manual tests:** follow `docs/TEST_LOG.md`.
+- **JVM unit tests** (`app/src/test`) cover the validation rules, the ingredient name normalizer, the unit converter, the strict recipe matcher, the expiry rules and the built-in recipe data. They run without a device. To run them, right-click `app/src/test` in Android Studio and choose **Run Tests**.
+- **Manual testing:** the app was run in the Android Studio emulator. A checklist of manual tests is in `docs/TEST_LOG.md`.
 
 ## Project structure
 
@@ -93,7 +92,6 @@ app/src/main/java/com/smartpantry/manager/
         FormatUtils               Number formatting
 app/src/main/res/                 Layouts, menu, strings, colours and theme
 app/src/test/                     JVM unit tests
-app/src/androidTest/              Instrumented database tests
 docs/                             Checklists, test log and Git guides
 ```
 
@@ -129,7 +127,7 @@ erDiagram
 - `pantry_item` has no foreign key to the recipe tables on purpose. A pantry ingredient and a recipe ingredient are matched by their normalized name in code, because a user can type any name.
 - Quantities have a `CHECK(quantity > 0)` constraint, so invalid data cannot be stored even if validation is bypassed.
 - **Seeding:** the 20 recipes are inserted when the database is created, and also when upgrading from version 1. The seeder does nothing if any recipe already exists, and recipe names are `UNIQUE`, so restarting the app never duplicates recipes.
-- **Upgrades:** `onUpgrade` never drops tables. Upgrading from version 1 adds the recipe tables and keeps all pantry data.
+- **Upgrades:** `onUpgrade` never drops tables, so upgrading from version 1 is designed to keep existing pantry data and add the recipe tables.
 
 **Why SQLite:** the data is structured and related (recipes have many ingredients), it needs to be saved on the device and queried, and SQLite is built into Android with no extra setup, server or dependency. SharedPreferences is used only for the three small settings values.
 
